@@ -1,23 +1,18 @@
-import { NextResponse } from "next/server";
 import { executeTransaction } from "@/lib/db";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+    const headersList = await headers();
+    const accountNumber = headersList.get("account");
     const result = await executeTransaction(async (connection) => {
       const [rows] = await connection.execute(
-        "SELECT account_number, balance FROM accounts WHERE user_id = ?",
-        [session.user.id]
+        "SELECT account_number, balance FROM accounts WHERE account_number = ?",
+        [accountNumber]
       );
       return rows;
     });
-
     return NextResponse.json(result);
   } catch (error) {
     console.error("Failed to fetch balance:", error);

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Plus, Wallet } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { AccountCard } from '@/components/AccountCard';
-import { TransferForm } from '@/components/TransferForm';
-import { TransactionHistory } from '@/components/TransactionHistory';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Plus, Wallet } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { AccountCard } from "@/components/AccountCard";
+import { TransferForm } from "@/components/TransferForm";
+import { TransactionHistory } from "@/components/TransactionHistory";
 
 interface Account {
   account_number: string;
@@ -15,11 +15,11 @@ interface Account {
 
 interface Transaction {
   id: string;
-  fromAccount: string;
-  toAccount: string;
+  from_account: string;
+  to_account: string;
   amount: number;
   status: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export default function Home() {
@@ -30,30 +30,41 @@ export default function Home() {
 
   const fetchAccountData = async () => {
     try {
-      const response = await fetch('/api/account/balance');
-      if (!response.ok) throw new Error('Failed to fetch account');
+      const response = await fetch("/api/account/balance", {
+        headers: {
+          "Content-Type": "application/json",
+          "account": localStorage.getItem("account") || "",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch account");
       const data = await response.json();
+      console.log(data);
       setAccount(data[0] || null);
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to fetch account details',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to fetch account details",
+        variant: "destructive",
       });
     }
   };
 
   const fetchTransactions = async () => {
     try {
-      const response = await fetch('/api/transaction/history');
-      if (!response.ok) throw new Error('Failed to fetch transactions');
+      const response = await fetch("/api/transaction/history", {
+        headers: {
+          "Content-Type": "application/json",
+          "account": localStorage.getItem("account") || "",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch transactions");
       const data = await response.json();
       setTransactions(data);
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to fetch transactions',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to fetch transactions",
+        variant: "destructive",
       });
     }
   };
@@ -61,22 +72,27 @@ export default function Home() {
   const handleCreateAccount = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/account/create', {
-        method: 'POST',
+      const response = await fetch("/api/account/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "account": localStorage.getItem("account") || "",
+        },
       });
 
-      if (!response.ok) throw new Error('Failed to create account');
-
+      if (!response.ok) throw new Error("Failed to create account");
+      const data = await response.json();
+      localStorage.setItem("account", data.accountNumber);
       await fetchAccountData();
       toast({
-        title: 'Account Created!',
-        description: 'Your new account has been created successfully',
+        title: "Account Created!",
+        description: "Your new account has been created successfully",
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to create account',
-        variant: 'destructive',
+        title: "Error",
+        description: "Failed to create account",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);

@@ -1,4 +1,7 @@
-import mysql from 'mysql2/promise';
+import mysql from "mysql2/promise";
+import { createOrSyncUserTable } from "./models/user";
+import { createOrSyncAccountTable } from "./models/account";
+import { createOrSyncTxnTable } from "./models/transaction";
 
 export async function createConnection() {
   return await mysql.createConnection({
@@ -7,6 +10,13 @@ export async function createConnection() {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
   });
+}
+
+export async function initTables() {
+  const connection = await createConnection();
+  await connection.query(createOrSyncAccountTable());
+  await connection.query(createOrSyncTxnTable());
+  await connection.end();
 }
 
 export async function executeTransaction<T>(

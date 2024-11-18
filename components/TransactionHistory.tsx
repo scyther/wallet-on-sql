@@ -7,11 +7,11 @@ import { format } from "date-fns";
 
 interface Transaction {
   id: string;
-  fromAccount: string;
-  toAccount: string;
+  from_account: string;
+  to_account: string;
   amount: number;
   status: string;
-  createdAt: string;
+  created_at: string;
 }
 
 interface TransactionHistoryProps {
@@ -21,11 +21,11 @@ interface TransactionHistoryProps {
 
 export function TransactionHistory({ transactions, userAccount }: TransactionHistoryProps) {
   return (
-    <Card className="p-6 bg-gray-800 border-gray-700">
+    <Card className="p-6 bg-gray-800 border-gray-700 text-white">
       <h2 className="text-lg font-semibold mb-4">Transaction History</h2>
       <div className="space-y-4">
         {transactions.map((transaction) => {
-          const isSender = transaction.fromAccount === userAccount;
+          const isSender = transaction.from_account === userAccount;
           return (
             <div
               key={transaction.id}
@@ -46,7 +46,7 @@ export function TransactionHistory({ transactions, userAccount }: TransactionHis
                     {isSender ? "Sent to" : "Received from"}
                   </p>
                   <p className="text-xs text-gray-400">
-                    {isSender ? transaction.toAccount : transaction.fromAccount}
+                    {isSender ? transaction.to_account : transaction.from_account}
                   </p>
                 </div>
               </div>
@@ -57,7 +57,7 @@ export function TransactionHistory({ transactions, userAccount }: TransactionHis
                   {isSender ? "-" : "+"}{formatCurrency(transaction.amount)}
                 </p>
                 <p className="text-xs text-gray-400">
-                  {format(new Date(transaction.createdAt), "MMM d, yyyy HH:mm")}
+                  {format(new Date(transaction.created_at), "MMM d, yyyy HH:mm")}
                 </p>
               </div>
             </div>

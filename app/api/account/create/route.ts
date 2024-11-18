@@ -1,30 +1,33 @@
-import { NextResponse } from 'next/server';
-import { executeTransaction } from '@/lib/db';
-import { generateAccountNumber } from '@/lib/utils/account';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { NextResponse } from "next/server";
+import { executeTransaction, initTables } from "@/lib/db";
+import { generateAccountNumber } from "@/lib/utils/account";
+import { headers } from "next/headers";
 
 export async function POST() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const headersList = await headers();
+    const oldAccountNumber = headersList.get("account");
+    if (oldAccountNumber) {
+      return NextResponse.json(
+        { error: "Account already exists" },
+        { status: 400 }
+      );
     }
 
     const accountNumber = generateAccountNumber();
-
+    await initTables();
     await executeTransaction(async (connection) => {
       await connection.execute(
-        'INSERT INTO accounts (user_id, account_number, balance) VALUES (?, ?, ?)',
-        [session.user.id, accountNumber, 0]
+        "INSERT INTO accounts ( account_number, balance) VALUES ( ?, ?)",
+        [accountNumber, 500]
       );
     });
 
     return NextResponse.json({ accountNumber });
   } catch (error) {
-    console.error('Failed to create account:', error);
+    console.error("Failed to create account:", error);
     return NextResponse.json(
-      { error: 'Failed to create account' },
+      { error: "Failed to create account" },
       { status: 500 }
     );
   }

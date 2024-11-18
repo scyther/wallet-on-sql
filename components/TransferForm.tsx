@@ -63,7 +63,7 @@ export function TransferForm({
   };
 
   return (
-    <Card className="p-6 bg-gray-800 border-gray-700">
+    <Card className="p-6 bg-gray-800 border-gray-700 text-white">
       <h2 className="text-lg font-semibold mb-4">Send Money</h2>
       <form onSubmit={handleTransfer} className="space-y-6">
         <div className="space-y-2">

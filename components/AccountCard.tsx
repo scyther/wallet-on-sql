@@ -15,12 +15,12 @@ export function AccountCard({ accountNumber, balance }: AccountCardProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <CreditCard className="h-6 w-6 text-blue-400" />
-          <h2 className="text-lg font-semibold">Account Details</h2>
+          <h2 className="text-lg font-semibold text-white">Account Details</h2>
         </div>
       </div>
       <div className="space-y-2">
         <p className="text-sm text-gray-400">Account Number</p>
-        <p className="text-xl font-mono">{accountNumber}</p>
+        <p className="text-xl font-mono text-white">{accountNumber}</p>
         <p className="text-sm text-gray-400 mt-4">Available Balance</p>
         <p className="text-3xl font-bold text-green-400">
           {formatCurrency(balance)}
