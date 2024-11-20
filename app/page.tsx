@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AccountCard } from "@/components/AccountCard";
 import { TransferForm } from "@/components/TransferForm";
 import { TransactionHistory } from "@/components/TransactionHistory";
+import { LoanApplicationForm } from "@/components/LoanApplication";
 
 interface Account {
   account_number: string;
@@ -28,12 +29,14 @@ export default function Home() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { toast } = useToast();
 
+  console.log("transactions", transactions);
+
   const fetchAccountData = async () => {
     try {
       const response = await fetch("/api/account/balance", {
         headers: {
           "Content-Type": "application/json",
-          "account": localStorage.getItem("account") || "",
+          account: localStorage.getItem("account") || "",
         },
       });
       if (!response.ok) throw new Error("Failed to fetch account");
@@ -54,7 +57,7 @@ export default function Home() {
       const response = await fetch("/api/transaction/history", {
         headers: {
           "Content-Type": "application/json",
-          "account": localStorage.getItem("account") || "",
+          account: localStorage.getItem("account") || "",
         },
       });
       if (!response.ok) throw new Error("Failed to fetch transactions");
@@ -76,7 +79,7 @@ export default function Home() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "account": localStorage.getItem("account") || "",
+          account: localStorage.getItem("account") || "",
         },
       });
 
@@ -108,7 +111,6 @@ export default function Home() {
     fetchAccountData();
     fetchTransactions();
   }, []);
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white p-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -141,10 +143,13 @@ export default function Home() {
                 fromAccount={account.account_number}
               />
             </div>
-            <TransactionHistory
-              transactions={transactions}
-              userAccount={account.account_number}
-            />
+            <div className="space-y-8">
+              <TransactionHistory
+                transactions={transactions}
+                userAccount={account.account_number}
+              />
+              <LoanApplicationForm />
+            </div>
           </div>
         ) : (
           <div className="text-center py-12">
