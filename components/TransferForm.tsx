@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Send } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Send } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface TransferFormProps {
   onTransferComplete: () => void;
@@ -18,18 +18,18 @@ export function TransferForm({
   fromAccount,
 }: TransferFormProps) {
   const [loading, setLoading] = useState(false);
-  const [amount, setAmount] = useState('');
-  const [toAccount, setToAccount] = useState('');
-  const { toast } = useToast();
+  const [amount, setAmount] = useState("");
+  const [toAccount, setToAccount] = useState("");
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch('/api/transaction', {
-        method: 'POST',
+      const response = await fetch("/api/transaction", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+          account: localStorage.getItem("account") || "",
         },
         body: JSON.stringify({
           fromAccount,
@@ -40,23 +40,14 @@ export function TransferForm({
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Transfer failed');
+        throw new Error(error.error || "Transfer failed");
       }
-
-      toast({
-        title: 'Success!',
-        description: 'Transfer completed successfully',
-      });
-
-      setAmount('');
-      setToAccount('');
+      toast.success("Transfer successful");
+      setAmount("");
+      setToAccount("");
       onTransferComplete();
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Transfer failed',
-        variant: 'destructive',
-      });
+    } catch (error: any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

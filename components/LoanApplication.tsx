@@ -5,15 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/utils/account";
+import toast from "react-hot-toast";
 
 export function LoanApplicationForm() {
   const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState("");
   const [tenure, setTenure] = useState("");
   const [emi, setEmi] = useState(0);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (amount && tenure) {
@@ -32,11 +31,7 @@ export function LoanApplicationForm() {
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (parseFloat(amount) > 100000) {
-      toast({
-        title: "Error",
-        description: "Maximum loan amount is 1 lakh",
-        variant: "destructive",
-      });
+      toast.error("Loan amount cannot exceed 100,000");
       return;
     }
     try {
@@ -45,6 +40,7 @@ export function LoanApplicationForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          account: localStorage.getItem("account") || "",
         },
         body: JSON.stringify({
           amount: parseFloat(amount),
@@ -56,21 +52,13 @@ export function LoanApplicationForm() {
         const error = await response.json();
         throw new Error(error.error || "Loan application failed");
       }
-
-      toast({
-        title: "Success!",
-        description: "Loan application submitted successfully",
-      });
+      console.log("response", response);
+      toast.success("Loan application successful");
 
       setAmount("");
       setTenure("");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Loan application failed",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

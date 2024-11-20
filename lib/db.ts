@@ -12,10 +12,16 @@ export async function createConnection() {
   });
 }
 
+const createAdminAccount = () => `
+  INSERT INTO accounts (account_number, balance) VALUES ('BANK', 1000000)
+ON DUPLICATE KEY UPDATE balance = balance
+`;
+
 export async function initTables() {
   const connection = await createConnection();
   await connection.query(createOrSyncAccountTable());
   await connection.query(createOrSyncTxnTable());
+  await connection.query(createAdminAccount());
   await connection.query(createOrSyncLoansTable());
   await connection.end();
 }

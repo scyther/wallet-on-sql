@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Wallet } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { AccountCard } from "@/components/AccountCard";
 import { TransferForm } from "@/components/TransferForm";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { LoanApplicationForm } from "@/components/LoanApplication";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 interface Account {
   account_number: string;
@@ -27,7 +28,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [account, setAccount] = useState<Account | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const { toast } = useToast();
 
   console.log("transactions", transactions);
 
@@ -44,11 +44,7 @@ export default function Home() {
       console.log(data);
       setAccount(data[0] || null);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch account details",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch account");
     }
   };
 
@@ -64,11 +60,7 @@ export default function Home() {
       const data = await response.json();
       setTransactions(data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch transactions",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch transactions");
     }
   };
 
@@ -87,16 +79,9 @@ export default function Home() {
       const data = await response.json();
       localStorage.setItem("account", data.accountNumber);
       await fetchAccountData();
-      toast({
-        title: "Account Created!",
-        description: "Your new account has been created successfully",
-      });
+      toast.success("Account created successfully");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create account",
-        variant: "destructive",
-      });
+      toast.error("Failed to create account");
     } finally {
       setLoading(false);
     }

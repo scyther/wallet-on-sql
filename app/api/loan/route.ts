@@ -1,16 +1,10 @@
 import { NextResponse } from "next/server";
 import { executeTransaction } from "@/lib/db";
-import { headers } from "next/headers";
 
 export async function GET() {
   try {
-    const headersList = headers();
-    const accountNumber = headersList.get("account");
     const result = await executeTransaction(async (connection) => {
-      const [rows] = await connection.execute(
-        "SELECT * FROM transactions WHERE from_account = ? OR to_account = ?",
-        [accountNumber, accountNumber]
-      );
+      const [rows] = await connection.execute("SELECT * FROM loans ");
       return rows;
     });
 

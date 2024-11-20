@@ -30,8 +30,9 @@ export async function POST(req: Request) {
         [accountNumber]
       );
 
-      if (!Array.isArray(rows) || rows.length === 0) {
-        return NextResponse.json(
+      if (!Array(rows).length) {
+        console.log("You already have a pending loan application");
+        throw NextResponse.json(
           { error: "You already have a pending loan application" },
           { status: 400 }
         );
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Failed to apply for loan:", error);
     return NextResponse.json(
-      { error: "Failed to apply for loan" },
+      { error: `Failed to apply for Loan: ${JSON.stringify(error)}` },
       { status: 500 }
     );
   }
